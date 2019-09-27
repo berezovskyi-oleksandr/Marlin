@@ -28,6 +28,10 @@
 #include "../module/stepper/indirection.h"
 #include "../module/temperature.h"
 
+#ifndef CONTROLLERFAN_INVERT
+  #define CONTROLLERFAN_INVERT false
+#endif
+
 ControllerFan controllerFan;
 
 uint8_t ControllerFan::speed;
@@ -85,6 +89,8 @@ void ControllerFan::update() {
       settings.auto_mode && lastMotorOn && PENDING(ms, lastMotorOn + SEC_TO_MS(settings.duration))
       ? settings.active_speed : settings.idle_speed
     );
+
+    speed = CONTROLLERFAN_INVERT ? 255 - speed : speed;
 
     // Allow digital or PWM fan output (see M42 handling)
     WRITE(CONTROLLER_FAN_PIN, speed);
